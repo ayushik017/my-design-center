@@ -1,0 +1,141 @@
+#%RAML 1.0
+title: Employee API
+version: v1
+baseUri: https://api.example.com/{version}
+mediaType: application/json
+
+types:
+  Employee:
+    type: object
+    properties:
+      id: integer
+      name: string
+      email: string
+      department: string
+    required: [name, email, department]
+
+  ErrorResponse:
+    type: object
+    properties:
+      errorCode: string
+      message: string
+
+/employees:
+  post:
+    description: Create a new employee
+    body:
+      application/json:
+        type: Employee
+        example:
+          {
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "department": "Engineering"
+          }
+    responses:
+      201:
+        description: Employee created successfully
+        body:
+          application/json:
+            example:
+              {
+                "id": 101,
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "department": "Engineering"
+              }
+      400:
+        description: Invalid input data
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "INVALID_INPUT",
+                "message": "Missing required fields"
+              }
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "SERVER_ERROR",
+                "message": "Unexpected error occurred"
+              }
+
+  get:
+    description: Get all employees
+    responses:
+      200:
+        description: List of employees
+        body:
+          application/json:
+            type: Employee[]
+            example:
+              [
+                {
+                  "id": 101,
+                  "name": "John Doe",
+                  "email": "john.doe@example.com",
+                  "department": "Engineering"
+                },
+                {
+                  "id": 102,
+                  "name": "Jane Smith",
+                  "email": "jane.smith@example.com",
+                  "department": "Marketing"
+                }
+              ]
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "SERVER_ERROR",
+                "message": "Unable to fetch employee data"
+              }
+
+/employees/{id}:
+  get:
+    description: Get employee by ID
+    uriParameters:
+      id:
+        type: integer
+        required: true
+    responses:
+      200:
+        description: Employee found
+        body:
+          application/json:
+            type: Employee
+            example:
+              {
+                "id": 101,
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "department": "Engineering"
+              }
+      404:
+        description: Employee not found
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "NOT_FOUND",
+                "message": "Employee with ID 101 not found"
+              }
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "SERVER_ERROR",
+                "message": "Unexpected error occurred"
+              }
