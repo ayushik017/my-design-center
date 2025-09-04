@@ -1,0 +1,73 @@
+#%RAML 1.0
+title: Department API
+version: v1
+baseUri: https://api.example.com/{version}
+mediaType: application/json
+
+types:
+  Department:
+    type: object
+    properties:
+      id: integer
+      name: string
+      location: string
+    required: [name, location]
+
+  ErrorResponse:
+    type: object
+    properties:
+      errorCode: string
+      message: string
+
+/departments:
+  post:
+    description: Create a new department
+    body:
+      application/json:
+        type: Department
+        example:
+          {
+            "name": "Human Resources",
+            "location": "New Delhi"
+          }
+    responses:
+      201:
+        description: Department created successfully
+        body:
+          application/json:
+            example:
+              {
+                "id": 201,
+                "name": "Human Resources",
+                "location": "New Delhi"
+              }
+      400:
+        description: Invalid input data
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "INVALID_INPUT",
+                "message": "Department name and location are required"
+              }
+      409:
+        description: Department already exists
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "DUPLICATE_ENTRY",
+                "message": "Department with name 'Human Resources' already exists"
+              }
+      500:
+        description: Internal server error
+        body:
+          application/json:
+            type: ErrorResponse
+            example:
+              {
+                "errorCode": "SERVER_ERROR",
+                "message": "Unexpected error occurred while creating department"
+              }
